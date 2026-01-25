@@ -2,24 +2,13 @@
 # Copy this file to .htaccess and adjust as needed
 
 # ============================================
-# 1. Protect sensitive files
+# Protect sensitive files
 # ============================================
 
 # Deny access to .env file (contains API keys and passwords)
 <Files ".env">
     Require all denied
 </Files>
-
-# Deny access to .env.example
-<Files ".env.example">
-    Require all denied
-</Files>
-
-# Deny access to .git directory
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteRule ^.git/ - [F,L]
-</IfModule>
 
 # Protect data directory from direct web access
 <IfModule mod_rewrite.c>
@@ -36,106 +25,3 @@
 <FilesMatch "\.(json|log)$">
     Require all denied
 </FilesMatch>
-
-# ============================================
-# 2. PHP Configuration (Optional)
-# ============================================
-
-# Increase execution time for long scans
-# Note: Some shared hosting providers may override these
-<IfModule mod_php.c>
-    php_value max_execution_time 3600
-    php_value memory_limit 256M
-    php_value post_max_size 50M
-    php_value upload_max_filesize 50M
-</IfModule>
-
-# For PHP 7.x and 8.x as CGI/FastCGI
-<IfModule mod_fcgid.c>
-    FcgidMaxRequestLen 52428800
-</IfModule>
-
-# ============================================
-# 3. Security Headers (Optional but recommended)
-# ============================================
-
-<IfModule mod_headers.c>
-    # Prevent clickjacking
-    Header always set X-Frame-Options "SAMEORIGIN"
-    
-    # Prevent MIME type sniffing
-    Header always set X-Content-Type-Options "nosniff"
-    
-    # Enable XSS protection
-    Header always set X-XSS-Protection "1; mode=block"
-    
-    # Referrer Policy
-    Header always set Referrer-Policy "strict-origin-when-cross-origin"
-    
-    # Force HTTPS (uncomment if using SSL)
-    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
-    
-    # Content Security Policy (adjust as needed)
-    # Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
-</IfModule>
-
-# ============================================
-# 4. Force HTTPS (Uncomment if SSL is configured)
-# ============================================
-
-# <IfModule mod_rewrite.c>
-#     RewriteEngine On
-#     RewriteCond %{HTTPS} off
-#     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-# </IfModule>
-
-# ============================================
-# 5. Directory Protection
-# ============================================
-
-# Prevent directory listing
-Options -Indexes
-
-# Follow symbolic links (required for some PHP operations)
-Options +FollowSymLinks
-
-# ============================================
-# 6. Error Pages (Optional)
-# ============================================
-
-# ErrorDocument 403 /403.html
-# ErrorDocument 404 /404.html
-# ErrorDocument 500 /500.html
-
-# ============================================
-# 7. Rate Limiting (Optional - requires mod_ratelimit)
-# ============================================
-
-# Limit bandwidth to prevent abuse
-# <IfModule mod_ratelimit.c>
-#     <Location "/domains-scan.php">
-#         SetOutputFilter RATE_LIMIT
-#         SetEnv rate-limit 400
-#     </Location>
-# </IfModule>
-
-# ============================================
-# 8. IP Whitelisting (Optional - restrict access)
-# ============================================
-
-# Uncomment and adjust IP addresses to restrict access
-# <Files "domains-scan.php">
-#     Require ip 192.168.1.100
-#     Require ip 203.0.113.0/24
-# </Files>
-
-# ============================================
-# 9. Disable PHP execution in data directory
-# ============================================
-
-<Directory "data">
-    <FilesMatch "\.php$">
-        Require all denied
-    </FilesMatch>
-    php_flag engine off
-</Directory>
