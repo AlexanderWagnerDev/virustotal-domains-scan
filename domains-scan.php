@@ -28,7 +28,12 @@ use PHPMailer\PHPMailer\Exception;
 // =====================================================
 // CONFIGURATION - Edit these values
 // =====================================================
-$DATA_DIR  = __DIR__ . '/data';
+$envDataDir = $_ENV['DATA_DIR'] ?? '';
+if ($envDataDir === '') {
+    $envDataDir = __DIR__ . '/data';
+}
+
+$DATA_DIR  = rtrim($envDataDir, "/");
 $LOG_FILE  = $DATA_DIR . '/scan.log';
 $LAST_JSON = $DATA_DIR . '/last_result.json';
 
