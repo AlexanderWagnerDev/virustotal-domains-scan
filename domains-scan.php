@@ -14,7 +14,7 @@
  * - PHPMailer
  * - .env file with API keys
  */
-
+ob_start();
 set_time_limit(3600);
 ignore_user_abort(true);
 
@@ -24,18 +24,6 @@ require_once __DIR__ . '/PHPMailer/SMTP.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-
-// =====================================================
-// CONFIGURATION - Edit these values
-// =====================================================
-$envDataDir = $_ENV['DATA_DIR'] ?? '';
-if ($envDataDir === '') {
-    $envDataDir = __DIR__ . '/data';
-}
-
-$DATA_DIR  = rtrim($envDataDir, "/");
-$LOG_FILE  = $DATA_DIR . '/scan.log';
-$LAST_JSON = $DATA_DIR . '/last_result.json';
 
 // =====================================================
 // Helpers
@@ -59,7 +47,7 @@ function log_status(string $msg): void {
 
 function load_env(string $file): void {
     if (!file_exists($file)) return;
-    $lines = file($file, FILE_IGNORE_NEWLINES | FILE_IGNORE_NEWLINES);
+    $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
         $line = trim($line);
         if ($line === '' || str_starts_with($line, '#') || !str_contains($line, '=')) continue;
@@ -114,8 +102,18 @@ function html(string $s): string {
 // =====================================================
 // Bootstrap: Check directory + load .env first!
 // =====================================================
-ensureDirOrDie($DATA_DIR);
 load_env(__DIR__ . '/.env');
+
+$envDataDir = $_ENV['DATA_DIR'] ?? '';
+if ($envDataDir === '') {
+    $envDataDir = __DIR__ . '/data';
+}
+
+$DATA_DIR  = rtrim($envDataDir, "/");
+$LOG_FILE  = $DATA_DIR . '/scan.log';
+$LAST_JSON = $DATA_DIR . '/last_result.json';
+
+ensureDirOrDie($DATA_DIR);
 
 // =====================================================
 // Auth from .env (optional - disable for public demo)
