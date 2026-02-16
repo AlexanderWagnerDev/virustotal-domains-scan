@@ -463,6 +463,7 @@ if (isset($_GET['start'])) {
         .header h1 {
             font-size:3em;
             background:linear-gradient(45deg,#00ff88,#00ccff);
+            background-clip:text;
             -webkit-background-clip:text;
             -webkit-text-fill-color:transparent;
             margin-bottom:15px;
